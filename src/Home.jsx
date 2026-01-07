@@ -36,6 +36,7 @@ function Home() {
       setViewModes({});
     });
   };
+
   const handleExtract = async () => {
     if (!files.length) return alert("Please select files first.");
 
@@ -44,32 +45,40 @@ function Home() {
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
+
       try {
-        // Extract data
+        // 1. Extract data
         const result = await extractData(file);
 
-        // Normalize the data for UI
+        // 2. Normalize data for UI + DB
         const data = {
           employee_information: result?.data?.employee_information || {},
           attendance_records: Array.isArray(result?.data?.attendance_records)
             ? result.data.attendance_records
             : [],
-          total_hours: result?.data?.total_hours || 0,
+          total_hours: result?.data?.overall_total_hours || 0,
         };
 
-        // Update UI for this file
+        // 3. Save image + extracted result to Supabase
+        await uploadImageAndSaveResult(file, { data });
+
+        // 4. Update UI for this file
         setResults((prev) => {
           const updated = [...prev];
           updated[i] = {
             data,
-            image_url: null, // optional if you want to use the preview image
+            image_url: null, // optional: store public URL if you return it
             message:
-              Object.keys(data).length === 0 ? "No data extracted" : null,
+              Object.keys(data).length === 0
+                ? "No data extracted"
+                : "Saved successfully",
             loading: false,
           };
           return updated;
         });
       } catch (err) {
+        console.error(err);
+
         setResults((prev) => {
           const updated = [...prev];
           updated[i] = {
@@ -79,7 +88,7 @@ function Home() {
               total_hours: 0,
             },
             image_url: null,
-            error: err.message || "Unknown error",
+            error: err.message || "Failed to extract or save data",
             loading: false,
           };
           return updated;

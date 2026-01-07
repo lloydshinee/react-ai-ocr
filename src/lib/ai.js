@@ -62,7 +62,7 @@ Return the output strictly in valid JSON format with the following structure:
       "total_hours" ** calculate total hours **
     }
   ],
-  "overall_total_hours": ** calculate the total hours **
+  "overall_total_hours": ** calculate the overall total hours **
 }
 
 Rules:
@@ -81,7 +81,6 @@ Rules:
       parsed = JSON.parse(response.text);
 
       console.log(parsed);
-      
     } catch {
       throw new Error("Model returned invalid JSON.");
     }
