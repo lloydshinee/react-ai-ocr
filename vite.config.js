@@ -8,6 +8,6 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
-    allowedHosts: "my.spc.edu.ph",
+    allowedHosts: ["my.spc.edu.ph"],
   },
 });
